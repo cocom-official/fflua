@@ -1,13 +1,12 @@
-﻿#ifndef _FF_LUA_REGISTER_H_
-#define _FF_LUA_REGISTER_H_
+﻿#pragma once
 
-#include <lua.hpp>
 #include <string>
 #include <string.h>
 #include <stdio.h>
 using namespace std;
 
-#include "lua/fflua_type.h"
+#include "lua.hpp"
+#include "fflua_type.h"
 
 namespace ff
 {
@@ -299,28 +298,28 @@ public:
 	    if (m_class_name.empty())
 	    {
     		lua_function_t lua_func = function_traits_t<FUNC>::lua_function;
-    
+
     		void* user_data_ptr = lua_newuserdata(m_ls, sizeof(func_));
     		new(user_data_ptr) FUNC(func_);
-    
+
     		lua_pushcclosure(m_ls, lua_func, 1);
     		lua_setglobal(m_ls, func_name_.c_str());
     	}
     	else
 	    {
 	        lua_function_t lua_func = function_traits_t<FUNC>::lua_function;
-    
+
     		void* user_data_ptr = lua_newuserdata(m_ls, sizeof(func_));
     		new(user_data_ptr) FUNC(func_);
-    
+
     		lua_pushcclosure(m_ls, lua_func, 1);
     		//lua_setglobal(m_ls, func_name_.c_str());
-    		
+
 	        lua_getglobal(m_ls, (m_class_name).c_str());
     		lua_pushstring(m_ls, func_name_.c_str());
     		lua_pushvalue(m_ls, -3);
     		lua_settable(m_ls, -3);
-    
+
     		lua_pop(m_ls, 2);
 	    }
 		return *this;
@@ -375,7 +374,7 @@ fflua_register_t<CLASS_TYPE, CTOR_TYPE>::fflua_register_t(lua_State* ls_, const 
 	lua_settable(ls_, -3);
 
 	lua_setglobal(ls_, class_name_.c_str());
-	
+
 	lua_pop(ls_, 1);
 
 	lua_function_t function_for_delete = &delete_traits_t<CLASS_TYPE>::lua_function;
@@ -2704,6 +2703,3 @@ struct fflua_register_router_t<RET (CLASS_TYPE::*)(ARG1, ARG2, ARG3, ARG4, ARG5,
 	}
 };
 }
-
-#endif
-

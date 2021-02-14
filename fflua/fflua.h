@@ -1,18 +1,14 @@
-#ifndef _FF_LUA_H_
-#define _FF_LUA_H_
+#pragma once
 
-#ifndef  _WIN32
 #include <stdint.h>
-#endif
-
 #include <stdlib.h>
-#include <lua.hpp>
 
 #include <string>
 using namespace std;
 
-#include "lua/fflua_type.h"
-#include "lua/fflua_register.h"
+#include "lua.hpp"
+#include "fflua_type.h"
+#include "fflua_register.h"
 
 namespace ff
 {
@@ -89,7 +85,7 @@ public:
         run_string(new_path);
         return 0;
     }
-    int  load_file(const string& file_name_)// 
+    int  load_file(const string& file_name_)//
 	{
 		if (luaL_dofile(m_ls, file_name_.c_str()))
 		{
@@ -103,7 +99,7 @@ public:
     template<typename T>
     void open_lib(T arg_);
 
-    void run_string(const char* str_) 
+    void run_string(const char* str_)
 	{
 		if (luaL_dostring(m_ls, str_))
 		{
@@ -112,7 +108,7 @@ public:
 			throw lua_exception_t(err);
 		}
 	}
-    void run_string(const string& str_) 
+    void run_string(const string& str_)
     {
         run_string(str_.c_str());
     }
@@ -140,7 +136,7 @@ public:
     template<typename T>
     void  reg(T a);
 
-    void call(const char* func_name_) 
+    void call(const char* func_name_)
 	{
 		::lua_getglobal(m_ls, func_name_);
 
@@ -215,7 +211,7 @@ private:
             {
                 break;
             }
-            
+
             if (c == '.')
             {
                 tmpBuff[i] = '\0';
@@ -236,7 +232,7 @@ private:
                 return 1;
             }
         }
-        
+
         lua_getglobal(m_ls, func_name_);
         return 0;
     }
@@ -292,12 +288,12 @@ void  fflua_t::reg(T a)
 
 //! impl for common RET
 template<typename RET>
-RET_V fflua_t::call(const char* func_name_) 
+RET_V fflua_t::call(const char* func_name_)
 {
     RET_V ret = init_value_traits_t<RET_V>::value();
 
     int tmpArg = getFuncByName(func_name_);
-    
+
     if (lua_pcall(m_ls, tmpArg + 0, 1, 0) != 0)
     {
         string err = fflua_tool_t::dump_error(m_ls, "lua_pcall failed func_name<%s>", func_name_);
@@ -320,7 +316,7 @@ RET_V fflua_t::call(const char* func_name_)
 
 
 template<typename RET, typename ARG1>
-RET_V fflua_t::call(const char* func_name_, const ARG1& arg1_) 
+RET_V fflua_t::call(const char* func_name_, const ARG1& arg1_)
 {
     RET_V ret = init_value_traits_t<RET_V>::value();
 
@@ -351,7 +347,7 @@ RET_V fflua_t::call(const char* func_name_, const ARG1& arg1_)
 
 template<typename RET, typename ARG1, typename ARG2>
 RET_V fflua_t::call(const char* func_name_, const ARG1& arg1_, const ARG2& arg2_)
-                                 
+
 {
     RET_V ret = init_value_traits_t<RET_V>::value();
 
@@ -382,7 +378,7 @@ RET_V fflua_t::call(const char* func_name_, const ARG1& arg1_, const ARG2& arg2_
 
 template<typename RET, typename ARG1, typename ARG2, typename ARG3>
 RET_V fflua_t::call(const char* func_name_, const ARG1& arg1_, const ARG2& arg2_,
-                                 const ARG3& arg3_) 
+                                 const ARG3& arg3_)
 {
     RET_V ret = init_value_traits_t<RET_V>::value();
 
@@ -414,7 +410,7 @@ RET_V fflua_t::call(const char* func_name_, const ARG1& arg1_, const ARG2& arg2_
 
 template<typename RET, typename ARG1, typename ARG2, typename ARG3, typename ARG4>
 RET_V fflua_t::call(const char* func_name_, const ARG1& arg1_, const ARG2& arg2_, const ARG3& arg3_,
-                                 const ARG4& arg4_) 
+                                 const ARG4& arg4_)
 {
     RET_V ret = init_value_traits_t<RET_V>::value();
 
@@ -447,7 +443,7 @@ RET_V fflua_t::call(const char* func_name_, const ARG1& arg1_, const ARG2& arg2_
 
 template<typename RET, typename ARG1, typename ARG2, typename ARG3, typename ARG4, typename ARG5>
 RET_V fflua_t::call(const char* func_name_, const ARG1& arg1_, const ARG2& arg2_, const ARG3& arg3_,
-                                 const ARG4& arg4_, const ARG5& arg5_) 
+                                 const ARG4& arg4_, const ARG5& arg5_)
 {
     RET_V ret = init_value_traits_t<RET_V>::value();
 
@@ -482,7 +478,7 @@ RET_V fflua_t::call(const char* func_name_, const ARG1& arg1_, const ARG2& arg2_
 
 template<typename RET, typename ARG1, typename ARG2, typename ARG3, typename ARG4, typename ARG5, typename ARG6>
 RET_V fflua_t::call(const char* func_name_, const ARG1& arg1_, const ARG2& arg2_, const ARG3& arg3_,
-                                 const ARG4& arg4_, const ARG5& arg5_, const ARG6& arg6_) 
+                                 const ARG4& arg4_, const ARG5& arg5_, const ARG6& arg6_)
 {
     RET_V ret = init_value_traits_t<RET_V>::value();
 
@@ -520,7 +516,7 @@ template<typename RET, typename ARG1, typename ARG2, typename ARG3, typename ARG
                 typename ARG5, typename ARG6, typename ARG7>
 RET_V fflua_t::call(const char* func_name_, const ARG1& arg1_, const ARG2& arg2_, const ARG3& arg3_,
                                  const ARG4& arg4_, const ARG5& arg5_, const ARG6& arg6_,
-                                 const ARG7& arg7_) 
+                                 const ARG7& arg7_)
 {
     RET_V ret = init_value_traits_t<RET_V>::value();
 
@@ -559,7 +555,7 @@ template<typename RET, typename ARG1, typename ARG2, typename ARG3, typename ARG
                 typename ARG5, typename ARG6, typename ARG7, typename ARG8>
 RET_V fflua_t::call(const char* func_name_, const ARG1& arg1_, const ARG2& arg2_, const ARG3& arg3_,
                                  const ARG4& arg4_, const ARG5& arg5_, const ARG6& arg6_, const ARG7& arg7_,
-                                 const ARG8& arg8_) 
+                                 const ARG8& arg8_)
 {
     RET_V ret = init_value_traits_t<RET_V>::value();
 
@@ -599,7 +595,7 @@ template<typename RET, typename ARG1, typename ARG2, typename ARG3, typename ARG
                 typename ARG5, typename ARG6, typename ARG7, typename ARG8, typename ARG9>
 RET_V fflua_t::call(const char* func_name_, const ARG1& arg1_, const ARG2& arg2_, const ARG3& arg3_,
                                  const ARG4& arg4_, const ARG5& arg5_, const ARG6& arg6_, const ARG7& arg7_,
-                                 const ARG8& arg8_, const ARG9& arg9_) 
+                                 const ARG8& arg8_, const ARG9& arg9_)
 {
     RET_V ret = init_value_traits_t<RET_V>::value();
 
@@ -636,4 +632,3 @@ RET_V fflua_t::call(const char* func_name_, const ARG1& arg1_, const ARG2& arg2_
 }
 
 }
-#endif

@@ -3,7 +3,7 @@
 #include <assert.h>
 using namespace std;
 
-#include "lua/fflua.h"
+#include "fflua.h"
 
 using namespace ff;
 
@@ -73,29 +73,26 @@ static void lua_reg(lua_State* ls)
 	fflua_register_t<>(ls)
 				.def(&dumy, "dumy");                //! 注册静态函数
 
-    
+
     fflua_register_t<clazz, ctor()>(ls, "clazz")
-				.def(&clazz::static_func, "static_func"); 
-    
+				.def(&clazz::static_func, "static_func");
+
 }
 
 int main(int argc, char* argv[])
 {
 
 	fflua_t fflua;
-    try 
+    try
     {
         fflua.setModFuncFlag(true);
         //! 注册C++ 对象到lua中
         fflua.reg(lua_reg);
-        
+
         //! 载入lua文件
         fflua.add_package_path("./");
-#ifdef _WIN32
-        fflua.load_file("../test.lua");
-#else
         fflua.load_file("test.lua");
-#endif
+
         //! 获取全局变量
         int var = 0;
         assert(0 == fflua.get_global_variable("test_var", var));
@@ -104,7 +101,7 @@ int main(int argc, char* argv[])
 
         //! 执行lua 语句
         fflua.run_string("print(\"exe run_string!!\")");
-        
+
         //! 调用lua函数, 基本类型作为参数
         int32_t arg1 = 1;
         float   arg2 = 2;
@@ -112,30 +109,30 @@ int main(int argc, char* argv[])
         string  arg4 = "4";
 		fflua.call<int32_t>("test_func", arg1, arg2, arg3, arg4);
         fflua.call<bool>("Mod:funcTest1", arg1, arg2);
-        
+
         //! 调用lua函数，stl类型作为参数， 自动转换为lua talbe
         vector<int> vec;        vec.push_back(100);
         list<float> lt;         lt.push_back((float)99.99);
         set<string> st;         st.insert("OhNIce");
         map<string, int> mp;    mp["key"] = 200;
         fflua.call<string>("test_stl", vec, lt, st,  mp);
-        
+
         //! 调用lua 函数返回 talbe，自动转换为stl结构
         vec = fflua.call<vector<int> >("test_return_stl_vector");
         lt  = fflua.call<list<float> >("test_return_stl_list");
         st  = fflua.call<set<string> >("test_return_stl_set");
         mp  = fflua.call<map<string, int> >("test_return_stl_map");
-        
+
         //! 调用lua函数，c++ 对象作为参数, foo_t 必须被注册过
         foo_t* foo_ptr = new foo_t(456);
         fflua.call<void>("test_object", foo_ptr);
-        
-        //! 调用lua函数，c++ 对象作为返回值, foo_t 必须被注册过 
+
+        //! 调用lua函数，c++ 对象作为返回值, foo_t 必须被注册过
         assert(foo_ptr == fflua.call<foo_t*>("test_ret_object", foo_ptr));
         //! 调用lua函数，c++ 对象作为返回值, 自动转换为基类
         base_t* base_ptr = fflua.call<base_t*>("test_ret_base_object", foo_ptr);
         assert(base_ptr == foo_ptr);
- 
+
     }
     catch (exception& e)
     {
@@ -143,8 +140,6 @@ int main(int argc, char* argv[])
 
 
     }
-#ifdef _WIN32
-    system("pause");
-#endif
+
     return 0;
 }

@@ -1,11 +1,6 @@
-﻿#ifndef _FF_LUA_TYPE_H_
-#define _FF_LUA_TYPE_H_
+﻿#pragma once
 
-
-#ifndef  _WIN32
-#include <stdint.h>
-#define SPRINTF_F snprintf
-#else
+#ifdef _WIN32
 #include <stdint.h>
 /*
 typedef  long int64_t;
@@ -27,6 +22,9 @@ struct strtoll_tool_t
 };
 #define strtoll strtoll_tool_t::do_strtoll
 #define strtoull (unsigned long)strtoll_tool_t::do_strtoll
+#else
+#include <stdint.h>
+#define SPRINTF_F snprintf
 #endif
 
 #include <stdlib.h>
@@ -1342,4 +1340,3 @@ struct lua_op_t<map<K, V> >
 };
 
 }
-#endif
