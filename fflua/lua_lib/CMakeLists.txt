@@ -27,11 +27,11 @@ set(lua_core_list
     "lua/lvm.c"
     "lua/lzio.c"
     "lua/ltests.c"
-    )
+)
 
 set(lua_auxlib_list
     "lua/lauxlib.c"
-    )
+)
 
 set(lua_lib_list
     "lua/lbaselib.c"
@@ -45,14 +45,14 @@ set(lua_lib_list
     "lua/loadlib.c"
     "lua/lcorolib.c"
     "lua/linit.c"
-    )
+)
 
 add_library(${PROJECT_NAME} STATIC ${lua_core_list} ${lua_auxlib_list} ${lua_lib_list})
 target_include_directories(
     ${PROJECT_NAME} PRIVATE
     "lua/"
-    )
+)
 target_include_directories(
     ${PROJECT_NAME} INTERFACE
     "."
-    )
+)

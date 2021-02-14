@@ -12,7 +12,13 @@ add_dependencies(${PROJECT_NAME} "lua")
 target_include_directories(
     ${PROJECT_NAME} INTERFACE
     "fflua/"
-    )
+)
 
-add_executable(${PROJECT_NAME}_test "example/main.cpp")
-target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME})
+if (CMAKE_BUILD_TYPE STREQUAL Debug)
+    add_executable(${PROJECT_NAME}_test "example/main.cpp")
+    target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME})
+    add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND bash -c "cp ${CMAKE_SOURCE_DIR}/example/test.lua ${CMAKE_BINARY_DIR}/test.lua"
+    )
+endif()

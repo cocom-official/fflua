@@ -15,6 +15,7 @@ function Mod:funcTest1(arg1, arg2)
     return true
 end
 Mod.funcTest1()
+
 -- 测试调用lua
 function test_func(arg1, arg2, arg3, arg4)
     print("in test_func:", arg1, arg2, arg3, arg4)
@@ -22,7 +23,7 @@ function test_func(arg1, arg2, arg3, arg4)
     vc = {1,2,3}
     lt = {4,5,6}
     st = {7,8,9}
-    dumy(mp, vc, lt, st)
+    dummy(mp, vc, lt, st)
     return arg1
 end
 
@@ -52,6 +53,7 @@ function test_return_stl_map()
         ["key"] = 124
     }
 end
+
 -- 测试接受C++对象
 function test_object(foo_obj)
     --测试构造
@@ -78,5 +80,4 @@ function test_ret_base_object(foo_obj)
     return foo_obj
 end
 
-    
 clazz:static_func()
