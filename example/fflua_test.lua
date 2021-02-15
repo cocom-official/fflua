@@ -1,3 +1,4 @@
+#!lua
 
 test_var = 99
 

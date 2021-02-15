@@ -19,6 +19,7 @@ if (CMAKE_BUILD_TYPE STREQUAL Debug)
     target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME})
     add_custom_command(
         TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND bash -c "cp ${CMAKE_SOURCE_DIR}/example/test.lua ${CMAKE_BINARY_DIR}/test.lua"
+        COMMAND bash -c "cp ${CMAKE_SOURCE_DIR}/example/fflua_test.lua ${CMAKE_BINARY_DIR}/fflua_test.lua"
+        COMMAND bash -c "cp ${CMAKE_SOURCE_DIR}/example/lua_tets_all.lua ${CMAKE_BINARY_DIR}/lua_tets_all.lua"
     )
 endif()

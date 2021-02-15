@@ -3,7 +3,9 @@ cmake_minimum_required(VERSION 3.5)
 project(lua LANGUAGES C)
 set(CMAKE_C_STANDARD 99)
 
-add_compile_options(-Wall -O2 -fno-stack-protector -fno-common -march=native)
+add_compile_options(-Wall -O2 -Wstringop-overflow=0)
+
+add_link_options(-Wl -E)
 
 set(lua_core_list
     "lua/lapi.c"

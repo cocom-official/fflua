@@ -100,3 +100,13 @@ assert(base_ptr == foo_ptr);
 //! 注册C++ 对象到lua中
 fflua.reg(lua_reg);
 ```
+
+## test
+
+``` shell
+mkdir build
+cd build
+cmake .. -GNinja -DCMAKE_BUILD_TYPE=Debug
+ninja -j16
+./fflua_test.exe
+```

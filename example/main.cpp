@@ -83,6 +83,18 @@ static void lua_reg(lua_State* ls)
 int main(int argc, char* argv[])
 {
 
+    /* test basic lua */
+    fflua_t lua;
+    try
+    {
+        lua.load_file("lua_tets_all.lua");
+    }
+    catch (exception& e)
+    {
+        printf("exception:%s\n", e.what());
+    }
+
+    /* test fflua */
     fflua_t fflua;
     try
     {
@@ -92,7 +104,7 @@ int main(int argc, char* argv[])
 
         //! 载入 lua 文件
         fflua.add_package_path("./");
-        fflua.load_file("test.lua");
+        fflua.load_file("fflua_test.lua");
 
         //! 获取全局变量
         int var = 0;
