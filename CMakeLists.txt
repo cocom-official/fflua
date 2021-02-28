@@ -14,7 +14,8 @@ target_include_directories(
     "fflua/"
 )
 
-if (CMAKE_BUILD_TYPE STREQUAL Debug)
+if (NOT CMAKE_BUILD_TYPE STREQUAL Release)
+if (NOT NO_FFLUA_TEST STREQUAL "y")
     add_executable(${PROJECT_NAME}_test "example/main.cpp")
     target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME})
     add_custom_command(
@@ -22,4 +23,5 @@ if (CMAKE_BUILD_TYPE STREQUAL Debug)
         COMMAND bash -c "cp ${CMAKE_SOURCE_DIR}/example/fflua_test.lua ${CMAKE_BINARY_DIR}/fflua_test.lua"
         COMMAND bash -c "cp ${CMAKE_SOURCE_DIR}/example/lua_tets_all.lua ${CMAKE_BINARY_DIR}/lua_tets_all.lua"
     )
+endif()
 endif()
