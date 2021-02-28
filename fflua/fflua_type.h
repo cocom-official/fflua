@@ -515,6 +515,7 @@ namespace ff
     {
         static void push_stack(lua_State *ls_, const lua_nil_t &arg_)
         {
+            (void)arg_;
             lua_pushnil(ls_);
         }
     };
@@ -524,6 +525,9 @@ namespace ff
     {
         static int get_ret_value(lua_State *ls_, int pos_, cpp_void_t &param_)
         {
+            (void)ls_;
+            (void)pos_;
+            (void)param_;
             return 0;
         }
     };
