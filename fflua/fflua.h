@@ -56,6 +56,15 @@ namespace ff
             }
             lua_repl_instance_deinit(&repl_instance);
         }
+        void reset()
+        {
+            lua_close(m_ls);
+            lua_repl_instance_deinit(&repl_instance);
+            m_ls = ::luaL_newstate();
+            ::luaL_openlibs(m_ls);
+            repl_instance.L = m_ls;
+            lua_repl_instance_init(&repl_instance);
+        }
         const string dump_stack() const { return fflua_tool_t::dump_stack(m_ls); }
         void setModFuncFlag(bool b) { m_bEnableModFunc = b; }
 
