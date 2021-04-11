@@ -38,21 +38,25 @@ namespace ff
         };
 
     public:
-        fflua_t(bool b = false) : m_ls(NULL),
-                                  m_bEnableModFunc(b)
+        fflua_t(bool b = false)
+            : m_ls(nullptr),
+              m_bEnableModFunc(b)
         {
             m_ls = ::luaL_newstate();
             ::luaL_openlibs(m_ls);
+            repl_instance.L = m_ls;
+            lua_repl_instance_init(&repl_instance);
         }
         virtual ~fflua_t()
         {
             if (m_ls)
             {
                 ::lua_close(m_ls);
-                m_ls = NULL;
+                m_ls = nullptr;
             }
+            lua_repl_instance_deinit(&repl_instance);
         }
-        void dump_stack() const { fflua_tool_t::dump_stack(m_ls); }
+        const string dump_stack() const { return fflua_tool_t::dump_stack(m_ls); }
         void setModFuncFlag(bool b) { m_bEnableModFunc = b; }
 
         lua_State *get_lua_state()
@@ -108,9 +112,24 @@ namespace ff
                 throw lua_exception_t(err);
             }
         }
+
         void run_string(const string &str_)
         {
             run_string(str_.c_str());
+        }
+
+        const string do_REPL(const string &str_)
+        {
+            string ret;
+            if (lua_repl_push_str(&repl_instance, str_.c_str()))
+            {
+                ret = string(repl_instance.str);
+                if (ret.empty())
+                {
+                    ret.append(" ");
+                }
+            }
+            return ret;
         }
 
         template <typename T>
@@ -238,6 +257,7 @@ namespace ff
     private:
         lua_State *m_ls;
         bool m_bEnableModFunc;
+        lua_repl_instance repl_instance;
     };
 
     template <typename T>

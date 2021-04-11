@@ -1,11 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(lua LANGUAGES C)
-set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 
 add_compile_options(-Wall -O2 -Wstringop-overflow=0)
-
-add_link_options(-Wl -E)
 
 set(lua_core_list
     "lua/lapi.c"
@@ -49,12 +48,20 @@ set(lua_lib_list
     "lua/linit.c"
 )
 
-add_library(${PROJECT_NAME} STATIC ${lua_core_list} ${lua_auxlib_list} ${lua_lib_list})
+set(lua_ext_list
+    "lua_ext.c"
+    "lua_repl.c"
+)
+
+add_library(${PROJECT_NAME} STATIC ${lua_core_list} ${lua_auxlib_list} ${lua_lib_list} ${lua_ext_list})
+
 target_include_directories(
     ${PROJECT_NAME} PRIVATE
-    "lua/"
+    "lua"
 )
 target_include_directories(
     ${PROJECT_NAME} INTERFACE
     "."
 )
+
+add_executable(${PROJECT_NAME}_interpreter ${lua_core_list} ${lua_auxlib_list} ${lua_lib_list} lua/lua.c)

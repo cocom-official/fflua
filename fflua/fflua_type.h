@@ -73,56 +73,13 @@ namespace ff
     class fflua_tool_t
     {
     public:
-        static void dump_stack(lua_State *ls_)
+        static const string dump_stack(lua_State *ls_)
         {
-            int i;
-            int top = lua_gettop(ls_);
-
-            for (i = 1; i <= top; i++)
-            {
-                int t = lua_type(ls_, i);
-                switch (t)
-                {
-                case LUA_TSTRING:
-                {
-                    printf("`%s'", lua_tostring(ls_, i));
-                }
-                break;
-                case LUA_TBOOLEAN:
-                {
-                    printf(lua_toboolean(ls_, i) ? "true" : "false");
-                }
-                break;
-                case LUA_TNUMBER:
-                {
-                    printf("`%g`", lua_tonumber(ls_, i));
-                }
-                break;
-                case LUA_TTABLE:
-                {
-                    printf("table end\n");
-                    lua_pushnil(ls_);
-                    while (lua_next(ls_, i) != 0)
-                    {
-                        printf("	%s - %s\n",
-                               lua_typename(ls_, lua_type(ls_, -2)),
-                               lua_typename(ls_, lua_type(ls_, -1)));
-                        lua_pop(ls_, 1);
-                    }
-                    printf("table end");
-                }
-                break;
-                default:
-                {
-                    printf("`%s`", lua_typename(ls_, t));
-                }
-                break;
-                }
-                printf(" ");
-            }
-            printf("\n");
+            char buff[512];
+            lua_dump_stack(ls_, buff, sizeof(buff));
+            return string(buff);
         }
-        static string dump_error(lua_State *ls_, const char *fmt, ...)
+        static const string dump_error(lua_State *ls_, const char *fmt, ...)
         {
             string ret;
             char buff[1024];
