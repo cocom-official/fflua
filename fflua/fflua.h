@@ -98,33 +98,39 @@ namespace ff
             run_string(new_path);
             return 0;
         }
-        int load_file(const string &file_name_) //
+
+        int load_file(const string &file_name_, string *err_out = nullptr)
         {
-            if (luaL_dofile(m_ls, file_name_.c_str()))
+            int ret = luaL_dofile(m_ls, file_name_.c_str());
+            if (ret)
             {
                 string err = fflua_tool_t::dump_error(m_ls, "cannot load file<%s>", file_name_.c_str());
                 ::lua_pop(m_ls, 1);
-                throw lua_exception_t(err);
+                throw_lua_exception(err, err_out);
             }
 
-            return 0;
+            return ret;
         }
+
         template <typename T>
         void open_lib(T arg_);
 
-        void run_string(const char *str_)
+        int run_string(const char *str_, string *err_out = nullptr)
         {
-            if (luaL_dostring(m_ls, str_))
+            int ret = luaL_dostring(m_ls, str_);
+            if (ret)
             {
                 string err = fflua_tool_t::dump_error(m_ls, "fflua_t::run_string ::lua_pcall failed str<%s>", str_);
                 ::lua_pop(m_ls, 1);
-                throw lua_exception_t(err);
+                throw_lua_exception(err, err_out);
             }
+
+            return ret;
         }
 
-        void run_string(const string &str_)
+        int run_string(const string &str_, string *err_out = nullptr)
         {
-            run_string(str_.c_str());
+            return run_string(str_.c_str(), err_out);
         }
 
         const string do_REPL(const string &str_)
@@ -162,7 +168,7 @@ namespace ff
         template <typename T>
         void reg(T a);
 
-        void call(const char *func_name_)
+        void call(const char *func_name_, string *err_out)
         {
             ::lua_getglobal(m_ls, func_name_);
 
@@ -170,54 +176,54 @@ namespace ff
             {
                 string err = fflua_tool_t::dump_error(m_ls, "lua_pcall failed func_name<%s>", func_name_);
                 ::lua_pop(m_ls, 1);
-                throw lua_exception_t(err);
+                throw_lua_exception(err, err_out);
             }
         }
 
         template <typename RET>
-        RET_V call(const char *func_name_);
+        RET_V call(const char *func_name_, string *err_out = nullptr);
 
         template <typename RET, typename ARG1>
-        RET_V call(const char *func_name_, const ARG1 &arg1_);
+        RET_V call(const char *func_name_, const ARG1 &arg1_, string *err_out = nullptr);
 
         template <typename RET, typename ARG1, typename ARG2>
-        RET_V call(const char *func_name_, const ARG1 &arg1_, const ARG2 &arg2_);
+        RET_V call(const char *func_name_, const ARG1 &arg1_, const ARG2 &arg2_, string *err_out = nullptr);
 
         template <typename RET, typename ARG1, typename ARG2, typename ARG3>
         RET_V call(const char *func_name_, const ARG1 &arg1_, const ARG2 &arg2_,
-                   const ARG3 &arg3_);
+                   const ARG3 &arg3_, string *err_out = nullptr);
 
         template <typename RET, typename ARG1, typename ARG2, typename ARG3, typename ARG4>
         RET_V call(const char *func_name_, const ARG1 &arg1_, const ARG2 &arg2_, const ARG3 &arg3_,
-                   const ARG4 &arg4_);
+                   const ARG4 &arg4_, string *err_out = nullptr);
 
         template <typename RET, typename ARG1, typename ARG2, typename ARG3, typename ARG4,
                   typename ARG5>
         RET_V call(const char *func_name_, const ARG1 &arg1_, const ARG2 &arg2_, const ARG3 &arg3_,
-                   const ARG4 &arg4_, const ARG5 &arg5_);
+                   const ARG4 &arg4_, const ARG5 &arg5_, string *err_out = nullptr);
 
         template <typename RET, typename ARG1, typename ARG2, typename ARG3, typename ARG4,
                   typename ARG5, typename ARG6>
         RET_V call(const char *func_name_, const ARG1 &arg1_, const ARG2 &arg2_, const ARG3 &arg3_,
-                   const ARG4 &arg4_, const ARG5 &arg5_, const ARG6 &arg6_);
+                   const ARG4 &arg4_, const ARG5 &arg5_, const ARG6 &arg6_, string *err_out = nullptr);
 
         template <typename RET, typename ARG1, typename ARG2, typename ARG3, typename ARG4,
                   typename ARG5, typename ARG6, typename ARG7>
         RET_V call(const char *func_name_, const ARG1 &arg1_, const ARG2 &arg2_, const ARG3 &arg3_,
                    const ARG4 &arg4_, const ARG5 &arg5_, const ARG6 &arg6_,
-                   const ARG7 &arg7_);
+                   const ARG7 &arg7_, string *err_out = nullptr);
 
         template <typename RET, typename ARG1, typename ARG2, typename ARG3, typename ARG4,
                   typename ARG5, typename ARG6, typename ARG7, typename ARG8>
         RET_V call(const char *func_name_, const ARG1 &arg1_, const ARG2 &arg2_, const ARG3 &arg3_,
                    const ARG4 &arg4_, const ARG5 &arg5_, const ARG6 &arg6_, const ARG7 &arg7_,
-                   const ARG8 &arg8_);
+                   const ARG8 &arg8_, string *err_out = nullptr);
 
         template <typename RET, typename ARG1, typename ARG2, typename ARG3, typename ARG4,
                   typename ARG5, typename ARG6, typename ARG7, typename ARG8, typename ARG9>
         RET_V call(const char *func_name_, const ARG1 &arg1_, const ARG2 &arg2_, const ARG3 &arg3_,
                    const ARG4 &arg4_, const ARG5 &arg5_, const ARG6 &arg6_, const ARG7 &arg7_,
-                   const ARG8 &arg8_, const ARG9 &arg9_);
+                   const ARG8 &arg8_, const ARG9 &arg9_, string *err_out = nullptr);
 
     private:
         int getFuncByName(const char *func_name_)
@@ -261,6 +267,20 @@ namespace ff
 
             lua_getglobal(m_ls, func_name_);
             return 0;
+        }
+
+        void *throw_lua_exception(string err, string *err_out = nullptr)
+        {
+            if (err_out != nullptr)
+            {
+                *err_out = err;
+            }
+            else
+            {
+                throw lua_exception_t(err);
+            }
+
+            return err_out;
         }
 
     private:
@@ -315,7 +335,7 @@ namespace ff
 
     //! impl for common RET
     template <typename RET>
-    RET_V fflua_t::call(const char *func_name_)
+    RET_V fflua_t::call(const char *func_name_, string *err_out)
     {
         RET_V ret = init_value_traits_t<RET_V>::value();
 
@@ -325,7 +345,8 @@ namespace ff
         {
             string err = fflua_tool_t::dump_error(m_ls, "lua_pcall failed func_name<%s>", func_name_);
             lua_pop(m_ls, 1);
-            throw lua_exception_t(err);
+            throw_lua_exception(err, err_out);
+            return ret;
         }
 
         if (lua_op_t<RET_V>::get_ret_value(m_ls, -1, ret))
@@ -333,7 +354,7 @@ namespace ff
             lua_pop(m_ls, 1);
             char buff[512];
             SPRINTF_F(buff, sizeof(buff), "callfunc [arg0] get_ret_value failed  func_name<%s>", func_name_);
-            throw lua_exception_t(buff);
+            throw_lua_exception(buff);
         }
 
         lua_pop(m_ls, 1);
@@ -342,7 +363,7 @@ namespace ff
     }
 
     template <typename RET, typename ARG1>
-    RET_V fflua_t::call(const char *func_name_, const ARG1 &arg1_)
+    RET_V fflua_t::call(const char *func_name_, const ARG1 &arg1_, string *err_out)
     {
         RET_V ret = init_value_traits_t<RET_V>::value();
 
@@ -354,7 +375,8 @@ namespace ff
         {
             string err = fflua_tool_t::dump_error(m_ls, "lua_pcall failed func_name<%s>", func_name_);
             lua_pop(m_ls, 1);
-            throw lua_exception_t(err);
+            throw_lua_exception(err, err_out);
+            return ret;
         }
 
         if (lua_op_t<RET_V>::get_ret_value(m_ls, -1, ret))
@@ -362,7 +384,7 @@ namespace ff
             lua_pop(m_ls, 1);
             char buff[512];
             SPRINTF_F(buff, sizeof(buff), "callfunc [arg1] get_ret_value failed  func_name<%s>", func_name_);
-            throw lua_exception_t(buff);
+            throw_lua_exception(buff, err_out);
         }
 
         lua_pop(m_ls, 1);
@@ -371,7 +393,7 @@ namespace ff
     }
 
     template <typename RET, typename ARG1, typename ARG2>
-    RET_V fflua_t::call(const char *func_name_, const ARG1 &arg1_, const ARG2 &arg2_)
+    RET_V fflua_t::call(const char *func_name_, const ARG1 &arg1_, const ARG2 &arg2_, string *err_out)
 
     {
         RET_V ret = init_value_traits_t<RET_V>::value();
@@ -385,7 +407,8 @@ namespace ff
         {
             string err = fflua_tool_t::dump_error(m_ls, "lua_pcall failed func_name<%s>", func_name_);
             lua_pop(m_ls, 1);
-            throw lua_exception_t(err);
+            throw_lua_exception(err, err_out);
+            return ret;
         }
 
         if (lua_op_t<RET_V>::get_ret_value(m_ls, -1, ret))
@@ -393,7 +416,7 @@ namespace ff
             lua_pop(m_ls, 1);
             char buff[512];
             SPRINTF_F(buff, sizeof(buff), "callfunc [arg2] get_ret_value failed  func_name<%s>", func_name_);
-            throw lua_exception_t(buff);
+            throw_lua_exception(buff);
         }
 
         lua_pop(m_ls, 1);
@@ -403,7 +426,7 @@ namespace ff
 
     template <typename RET, typename ARG1, typename ARG2, typename ARG3>
     RET_V fflua_t::call(const char *func_name_, const ARG1 &arg1_, const ARG2 &arg2_,
-                        const ARG3 &arg3_)
+                        const ARG3 &arg3_, string *err_out)
     {
         RET_V ret = init_value_traits_t<RET_V>::value();
 
@@ -417,7 +440,8 @@ namespace ff
         {
             string err = fflua_tool_t::dump_error(m_ls, "lua_pcall failed func_name<%s>", func_name_);
             lua_pop(m_ls, 1);
-            throw lua_exception_t(err);
+            throw_lua_exception(err, err_out);
+            return ret;
         }
 
         if (lua_op_t<RET_V>::get_ret_value(m_ls, -1, ret))
@@ -425,7 +449,7 @@ namespace ff
             lua_pop(m_ls, 1);
             char buff[512];
             SPRINTF_F(buff, sizeof(buff), "callfunc [arg3] get_ret_value failed  func_name<%s>", func_name_);
-            throw lua_exception_t(buff);
+            throw_lua_exception(buff);
         }
 
         lua_pop(m_ls, 1);
@@ -435,7 +459,7 @@ namespace ff
 
     template <typename RET, typename ARG1, typename ARG2, typename ARG3, typename ARG4>
     RET_V fflua_t::call(const char *func_name_, const ARG1 &arg1_, const ARG2 &arg2_, const ARG3 &arg3_,
-                        const ARG4 &arg4_)
+                        const ARG4 &arg4_, string *err_out)
     {
         RET_V ret = init_value_traits_t<RET_V>::value();
 
@@ -450,7 +474,8 @@ namespace ff
         {
             string err = fflua_tool_t::dump_error(m_ls, "lua_pcall failed func_name<%s>", func_name_);
             lua_pop(m_ls, 1);
-            throw lua_exception_t(err);
+            throw_lua_exception(err, err_out);
+            return ret;
         }
 
         if (lua_op_t<RET_V>::get_ret_value(m_ls, -1, ret))
@@ -458,7 +483,7 @@ namespace ff
             lua_pop(m_ls, 1);
             char buff[512];
             SPRINTF_F(buff, sizeof(buff), "callfunc [arg4] get_ret_value failed  func_name<%s>", func_name_);
-            throw lua_exception_t(buff);
+            throw_lua_exception(buff);
         }
 
         lua_pop(m_ls, 1);
@@ -468,7 +493,7 @@ namespace ff
 
     template <typename RET, typename ARG1, typename ARG2, typename ARG3, typename ARG4, typename ARG5>
     RET_V fflua_t::call(const char *func_name_, const ARG1 &arg1_, const ARG2 &arg2_, const ARG3 &arg3_,
-                        const ARG4 &arg4_, const ARG5 &arg5_)
+                        const ARG4 &arg4_, const ARG5 &arg5_, string *err_out)
     {
         RET_V ret = init_value_traits_t<RET_V>::value();
 
@@ -484,7 +509,8 @@ namespace ff
         {
             string err = fflua_tool_t::dump_error(m_ls, "lua_pcall failed func_name<%s>", func_name_);
             lua_pop(m_ls, 1);
-            throw lua_exception_t(err);
+            throw_lua_exception(err, err_out);
+            return ret;
         }
 
         if (lua_op_t<RET_V>::get_ret_value(m_ls, -1, ret))
@@ -492,7 +518,7 @@ namespace ff
             lua_pop(m_ls, 1);
             char buff[512];
             SPRINTF_F(buff, sizeof(buff), "callfunc [arg5] get_ret_value failed  func_name<%s>", func_name_);
-            throw lua_exception_t(buff);
+            throw_lua_exception(buff);
         }
 
         lua_pop(m_ls, 1);
@@ -502,7 +528,7 @@ namespace ff
 
     template <typename RET, typename ARG1, typename ARG2, typename ARG3, typename ARG4, typename ARG5, typename ARG6>
     RET_V fflua_t::call(const char *func_name_, const ARG1 &arg1_, const ARG2 &arg2_, const ARG3 &arg3_,
-                        const ARG4 &arg4_, const ARG5 &arg5_, const ARG6 &arg6_)
+                        const ARG4 &arg4_, const ARG5 &arg5_, const ARG6 &arg6_, string *err_out)
     {
         RET_V ret = init_value_traits_t<RET_V>::value();
 
@@ -519,7 +545,8 @@ namespace ff
         {
             string err = fflua_tool_t::dump_error(m_ls, "lua_pcall failed func_name<%s>", func_name_);
             lua_pop(m_ls, 1);
-            throw lua_exception_t(err);
+            throw_lua_exception(err, err_out);
+            return ret;
         }
 
         if (lua_op_t<RET_V>::get_ret_value(m_ls, -1, ret))
@@ -527,7 +554,7 @@ namespace ff
             lua_pop(m_ls, 1);
             char buff[512];
             SPRINTF_F(buff, sizeof(buff), "callfunc [arg6] get_ret_value failed  func_name<%s>", func_name_);
-            throw lua_exception_t(buff);
+            throw_lua_exception(buff);
         }
 
         lua_pop(m_ls, 1);
@@ -539,7 +566,7 @@ namespace ff
               typename ARG5, typename ARG6, typename ARG7>
     RET_V fflua_t::call(const char *func_name_, const ARG1 &arg1_, const ARG2 &arg2_, const ARG3 &arg3_,
                         const ARG4 &arg4_, const ARG5 &arg5_, const ARG6 &arg6_,
-                        const ARG7 &arg7_)
+                        const ARG7 &arg7_, string *err_out)
     {
         RET_V ret = init_value_traits_t<RET_V>::value();
 
@@ -557,7 +584,8 @@ namespace ff
         {
             string err = fflua_tool_t::dump_error(m_ls, "lua_pcall failed func_name<%s>", func_name_);
             lua_pop(m_ls, 1);
-            throw lua_exception_t(err);
+            throw_lua_exception(err, err_out);
+            return ret;
         }
 
         if (lua_op_t<RET_V>::get_ret_value(m_ls, -1, ret))
@@ -565,7 +593,7 @@ namespace ff
             lua_pop(m_ls, 1);
             char buff[512];
             SPRINTF_F(buff, sizeof(buff), "callfunc [arg7] get_ret_value failed  func_name<%s>", func_name_);
-            throw lua_exception_t(buff);
+            throw_lua_exception(buff);
         }
 
         lua_pop(m_ls, 1);
@@ -577,7 +605,7 @@ namespace ff
               typename ARG5, typename ARG6, typename ARG7, typename ARG8>
     RET_V fflua_t::call(const char *func_name_, const ARG1 &arg1_, const ARG2 &arg2_, const ARG3 &arg3_,
                         const ARG4 &arg4_, const ARG5 &arg5_, const ARG6 &arg6_, const ARG7 &arg7_,
-                        const ARG8 &arg8_)
+                        const ARG8 &arg8_, string *err_out)
     {
         RET_V ret = init_value_traits_t<RET_V>::value();
 
@@ -596,7 +624,8 @@ namespace ff
         {
             string err = fflua_tool_t::dump_error(m_ls, "lua_pcall failed func_name<%s>", func_name_);
             lua_pop(m_ls, 1);
-            throw lua_exception_t(err);
+            throw_lua_exception(err, err_out);
+            return ret;
         }
 
         if (lua_op_t<RET_V>::get_ret_value(m_ls, -1, ret))
@@ -604,7 +633,7 @@ namespace ff
             lua_pop(m_ls, 1);
             char buff[512];
             SPRINTF_F(buff, sizeof(buff), "callfunc [arg8] get_ret_value failed  func_name<%s>", func_name_);
-            throw lua_exception_t(buff);
+            throw_lua_exception(buff);
         }
 
         lua_pop(m_ls, 1);
@@ -616,7 +645,7 @@ namespace ff
               typename ARG5, typename ARG6, typename ARG7, typename ARG8, typename ARG9>
     RET_V fflua_t::call(const char *func_name_, const ARG1 &arg1_, const ARG2 &arg2_, const ARG3 &arg3_,
                         const ARG4 &arg4_, const ARG5 &arg5_, const ARG6 &arg6_, const ARG7 &arg7_,
-                        const ARG8 &arg8_, const ARG9 &arg9_)
+                        const ARG8 &arg8_, const ARG9 &arg9_, string *err_out)
     {
         RET_V ret = init_value_traits_t<RET_V>::value();
 
@@ -636,7 +665,8 @@ namespace ff
         {
             string err = fflua_tool_t::dump_error(m_ls, "lua_pcall failed func_name<%s>", func_name_);
             lua_pop(m_ls, 1);
-            throw lua_exception_t(err);
+            throw_lua_exception(err, err_out);
+            return ret;
         }
 
         if (lua_op_t<RET_V>::get_ret_value(m_ls, -1, ret))
@@ -644,7 +674,7 @@ namespace ff
             lua_pop(m_ls, 1);
             char buff[512];
             SPRINTF_F(buff, sizeof(buff), "callfunc [arg9] get_ret_value failed func_name<%s>", func_name_);
-            throw lua_exception_t(buff);
+            throw_lua_exception(buff);
         }
 
         lua_pop(m_ls, 1);

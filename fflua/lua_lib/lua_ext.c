@@ -3,7 +3,7 @@
 
 #include "lua_ext.h"
 
-static int append_str(char *buff, int buff_size, const char *str)
+inline static int append_str(char *buff, int buff_size, const char *str)
 {
     strncpy_s(buff + strlen(buff), buff_size, str, buff_size);
 
@@ -30,6 +30,7 @@ int lua_dump_stack(lua_State *L, char *str, int buff_size)
         {
             return 0;
         }
+
         if (i > 1)
         {
             append_str(str, buff_size, "\t");

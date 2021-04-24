@@ -53,19 +53,19 @@ static bool try_add_instance(lua_repl_instance *instance)
     return false;
 }
 
-static void set_instance_str(lua_repl_instance *instance, const char *str)
+inline static void set_instance_str(lua_repl_instance *instance, const char *str)
 {
     strncpy_s(instance->str, LUA_REPL_STATE_MAX_BUFF_SIZE, str, LUA_REPL_STATE_MAX_BUFF_SIZE);
 }
 
-static int append_instance_str(lua_repl_instance *instance, const char *str)
+inline static int append_instance_str(lua_repl_instance *instance, const char *str)
 {
     strncpy_s(instance->str + strlen(instance->str), LUA_REPL_STATE_MAX_BUFF_SIZE, str, LUA_REPL_STATE_MAX_BUFF_SIZE);
 
     return strlen(instance->str);
 }
 
-static lua_repl_instance *find_instance_form_lua_State(lua_State *L)
+inline static lua_repl_instance *find_instance_form_lua_State(lua_State *L)
 {
     for (int i = 0; i < LUA_REPL_MAX_INSTANCE; i++)
     {
