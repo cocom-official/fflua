@@ -5,7 +5,20 @@
 
 inline static int append_str(char *buff, int buff_size, const char *str)
 {
-    strncpy_s(buff + strlen(buff), buff_size, str, buff_size);
+    size_t len = strlen(buff);
+    size_t remain_len = buff_size - len - 1;
+
+    if (remain_len <= 0)
+    {
+        return len;
+    }
+
+    strncpy(buff + len, str, remain_len);
+
+    if (strlen(str) >= buff_size - len - 1)
+    {
+        buff[buff_size -1] = '0';
+    }
 
     return strlen(buff);
 }
