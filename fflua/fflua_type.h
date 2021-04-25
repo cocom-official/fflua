@@ -25,8 +25,7 @@ struct strtoll_tool_t
 #define strtoull (unsigned long)strtoll_tool_t::do_strtoll
 #else
 #include <stdint.h>
-#define snprintf_nowarn(...) (snprintf(__VA_ARGS__) < 0 ? (void)0 : (void)0)
-#define SPRINTF_F snprintf_nowarn
+#define SPRINTF_F snprintf
 #endif
 
 #include <stdlib.h>

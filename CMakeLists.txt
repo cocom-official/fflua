@@ -4,6 +4,8 @@ project(fflua LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+add_compile_options(-Wno-format-truncation)
+
 add_library(${PROJECT_NAME} STATIC "fflua/null.cpp")
 
 add_subdirectory("fflua/lua_lib")

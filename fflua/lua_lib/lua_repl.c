@@ -55,12 +55,25 @@ static bool try_add_instance(lua_repl_instance *instance)
 
 inline static void set_instance_str(lua_repl_instance *instance, const char *str)
 {
-    strncpy_s(instance->str, LUA_REPL_STATE_MAX_BUFF_SIZE, str, LUA_REPL_STATE_MAX_BUFF_SIZE);
+    strncpy(instance->str, str, LUA_REPL_STATE_MAX_BUFF_SIZE - 1);
 }
 
 inline static int append_instance_str(lua_repl_instance *instance, const char *str)
 {
-    strncpy_s(instance->str + strlen(instance->str), LUA_REPL_STATE_MAX_BUFF_SIZE, str, LUA_REPL_STATE_MAX_BUFF_SIZE);
+    size_t len = strlen(instance->str);
+    size_t remain_len = LUA_REPL_STATE_MAX_BUFF_SIZE - len - 1;
+
+    if (remain_len <= 0)
+    {
+        return len;
+    }
+
+    strncpy(instance->str + len, str, remain_len);
+
+    if (strlen(str) >= LUA_REPL_STATE_MAX_BUFF_SIZE - len - 1)
+    {
+        instance->str[LUA_REPL_STATE_MAX_BUFF_SIZE -1] = '0';
+    }
 
     return strlen(instance->str);
 }
