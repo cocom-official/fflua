@@ -94,7 +94,7 @@ inline static lua_repl_instance *find_instance_form_lua_State(lua_State *L)
 static bool pushline(lua_State *L, const char *b, bool firstline)
 {
     char buffer[LUA_MAXINPUT] = {0};
-    strncpy(buffer, b, LUA_MAXINPUT);
+    strncpy(buffer, b, LUA_MAXINPUT - 1);
 
     size_t l = strlen(buffer);
     if (l > 0 && buffer[l - 1] == '\n')
