@@ -64,4 +64,6 @@ target_include_directories(
     "."
 )
 
-add_executable(${PROJECT_NAME}_interpreter ${lua_core_list} ${lua_auxlib_list} ${lua_lib_list} lua/lua.c)
+if (${PROJECT_NAME}_interpreter_build STREQUAL "y")
+    add_executable(${PROJECT_NAME}_interpreter ${lua_core_list} ${lua_auxlib_list} ${lua_lib_list} lua/lua.c)
+endif()
